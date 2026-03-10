@@ -50,7 +50,7 @@ def trackearMano(captura):
     captura.release()
     cv2.destroyAllWindows()
 def main():
-    url = "http://192.168.93.209:4747/video"
+    url = "http://:4747/video"
     captura = abrirCamara(url)
     if captura is None:
         return
