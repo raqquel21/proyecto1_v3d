@@ -81,4 +81,4 @@ def ejecutar_aplicacion(url):
     cv2.destroyAllWindows()
 
 
-ejecutar_aplicacion("http://10.237.48.182:4747/video")
+ejecutar_aplicacion("http://10.237.22.37:8080/video")

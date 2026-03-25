@@ -2,11 +2,13 @@ import os
 import cv2
 import numpy as np
 import open3d as o3d
+import pyautogui  # Para controlar el cursor del PC
 
 SOURCE = "http://192.168.1.34:4747/video"
 FRAME_SIZE = (640, 480)
-TRACKER_TYPE = "KCF"   # "KCF" o "CSRT"
-H_FILE = "homografia_mesa.npz"
+TRACKER_TYPE = "MOSSE"   # "KCF" o "CSRT"
+H_FILE = "../apartado_1_3/homografia_mesa.npz"
+
 
 # Plano de trabajo (cm)
 PLANE_W = 30.0
@@ -14,13 +16,13 @@ PLANE_H = 20.0
 GOAL_WORLD = (20.0, 10.0)
 VIS_SCALE = 10.0
 
-# Deteccion automatica
+# Detección automática
 LEARNING_FRAMES = 60
 FIXED_BOX_SIZE = 120
 MIN_AREA = 3000
 MAX_AREA_RATIO = 0.50
 
-# Mostrar mascara de movimiento para depurar
+# Mostrar máscara de movimiento para depurar
 SHOW_MASK = False
 
 
@@ -203,7 +205,7 @@ def main():
         print(e)
         return
 
-    print(f"Homografia cargada. Error medio de reproyeccion: {reproj_error:.3f} px")
+    print(f"Homografía cargada. Error medio de reproyección: {reproj_error:.3f} px")
 
     cap = abrir_camara(SOURCE)
     if cap is None:
@@ -217,9 +219,12 @@ def main():
     deteccion_completada = False
     learning_count = 0
 
-    print("\nModo automatico 1.3 iniciado.")
-    print("Durante la calibracion de fondo NO metas la mano en escena.")
+    print("\nModo automático 1.3 iniciado.")
+    print("Durante la calibración de fondo NO metas la mano en escena.")
     print("Pulsa ESC para salir.")
+
+    prev_cursor_x, prev_cursor_y = None, None  # Para suavizar el movimiento del cursor
+    #frame_count = 0
 
     while True:
         ok, frame = cap.read()
@@ -253,7 +258,7 @@ def main():
                 tracker.init(frame, bbox)
                 deteccion_completada = True
                 state_text = "Tracking iniciado"
-                print("Deteccion automatica exitosa.")
+                print("Detección automática exitosa.")
 
         else:
             ok_tracker, bbox = tracker.update(frame)
@@ -272,14 +277,33 @@ def main():
                 xw, yw = image_to_world(H_i2w, contacto)
                 scene.update_hand(xw, yw)
                 state_text = "Tracking mano"
+
+                # === NUEVO BLOQUE PARA CONTROLAR CURSOR ===
+                screen_w, screen_h = pyautogui.size()
+                cursor_x = int((xw / PLANE_W) * screen_w)
+                cursor_y = int((yw / PLANE_H) * screen_h)
+                #cursor_y = screen_h - cursor_y  # invertir eje Y si necesario
+
+                # Suavizado simple
+                if prev_cursor_x is not None and prev_cursor_y is not None:
+                    cursor_x = int(prev_cursor_x + 0.2 * (cursor_x - prev_cursor_x))
+                    cursor_y = int(prev_cursor_y + 0.2 * (cursor_y - prev_cursor_y))
+                #frame_count += 1
+                #if frame_count % 2 == 0:  # solo cada 2 frames
+                 #   pyautogui.moveTo(cursor_x, cursor_y)
+                pyautogui.moveTo(cursor_x, cursor_y)
+                prev_cursor_x, prev_cursor_y = cursor_x, cursor_y
+                # === FIN BLOQUE CURSOR ===
+
                 dibujar_info(frame, TRACKER_TYPE, fps, reproj_error, contacto, xw, yw, state_text)
+
             else:
                 deteccion_completada = False
                 state_text = "Seguimiento perdido -> reiniciando"
-                print("Seguimiento perdido. Reiniciando deteccion.")
+                print("Seguimiento perdido. Reiniciando detección.")
                 fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
                 dibujar_info(frame, TRACKER_TYPE, fps, reproj_error, None, 0.0, 0.0, state_text)
-                cv2.imshow("Proyecto 1.3 - automatico", frame)
+                cv2.imshow("Proyecto 1.3 - automático", frame)
                 scene.render()
                 if cv2.waitKey(1) & 0xFF == 27:
                     break
@@ -289,11 +313,11 @@ def main():
         if contacto is None:
             dibujar_info(frame, TRACKER_TYPE, fps, reproj_error, None, 0.0, 0.0, state_text)
 
-        cv2.imshow("Proyecto 1.3 - automatico", frame)
+        cv2.imshow("Proyecto 1.3 - automático", frame)
         scene.render()
 
         key = cv2.waitKey(1) & 0xFF
-        if key == 27:
+        if key == 13:
             break
 
     cap.release()

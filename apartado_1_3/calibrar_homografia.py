@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-SOURCE = 0
+SOURCE = "http://192.168.1.34:4747/video"
 FRAME_SIZE = (640, 480)
 OUT_FILE = "homografia_mesa.npz"
 
@@ -20,7 +20,7 @@ clicked_points = []
 frame_frozen = None
 
 
-def abrir_camara(source=0):
+def abrir_camara(source):
     if isinstance(source, int):
         cap = cv2.VideoCapture(source)
         if not cap.isOpened():
