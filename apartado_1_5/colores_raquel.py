@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import pyautogui
 import os
+import subprocess
 
 # --- CONFIGURACIÓN CÁMARA ---
 SOURCE = "http://192.168.1.34:4747/video"
@@ -50,6 +51,7 @@ def dibujar_zona(frame, H_w2i):
 
 # --- MAIN ---
 def main():
+    subprocess.Popen(["python", "buscaminas.py"])
     H_w2i, H_i2w = cargar_homografia(H_FILE)
     cap = cv2.VideoCapture(SOURCE)
     cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
