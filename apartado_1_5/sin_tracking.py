@@ -60,9 +60,6 @@ def main():
 
         frame = cv2.resize(frame, FRAME_SIZE)
 
-        # ❌ SIN espejo (ya lo quitaste)
-        # frame = cv2.flip(frame, 1)
-
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         res = hands_detector.process(rgb)
 
