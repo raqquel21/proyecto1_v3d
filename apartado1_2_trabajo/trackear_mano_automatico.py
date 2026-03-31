@@ -7,7 +7,7 @@ def ejecutar_aplicacion(url):
     if not cap.isOpened(): return
 
     # Usamos KCF para que sea más ligero y responda mejor a la velocidad
-    tracker = cv2.TrackerKCF.create()
+    tracker = cv2.TrackerCSRT.create()
     # history=500 para que tenga buena memoria del fondo blanco (hay que fijarse si vamos a cambiar de fondo!!)
     backSub = cv2.createBackgroundSubtractorMOG2(history=500, varThreshold=50, detectShadows=False)
 
@@ -81,4 +81,4 @@ def ejecutar_aplicacion(url):
     cv2.destroyAllWindows()
 
 
-ejecutar_aplicacion("http://10.237.48.182:4747/video")
+ejecutar_aplicacion("http://192.168.93.209:4747/video")
