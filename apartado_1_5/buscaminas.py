@@ -30,7 +30,7 @@ banderas = [[False for _ in range(TAM)] for _ in range(TAM)]
 
 vidas = 10
 
-# 🔢 Contar minas alrededor
+#  Contar minas alrededor
 def contar_minas(fila, col):
     contador = 0
     for i in range(-1, 2):
@@ -42,9 +42,9 @@ def contar_minas(fila, col):
                 if tablero[ni][nj] == 1:
                     contador += 1
 
-    return 8-contador
+    return contador
 
-# 🎨 Dibujar tablero
+# Dibujar tablero
 def dibujar():
     screen.fill(BLANCO)
 
@@ -77,7 +77,7 @@ def dibujar():
 
     pygame.display.flip()
 
-# 🎮 Bucle principal
+# Bucle principal
 running = True
 while running:
     dibujar()
@@ -92,7 +92,7 @@ while running:
             col = (x - MARGEN) // TILE
             fila = (y - MARGEN) // TILE
 
-                # 🖱️ CLICK IZQUIERDO
+                #  CLICK IZQUIERDO
             if event.button == 1:
                 if not visible[fila][col] and not banderas[fila][col]:
                     visible[fila][col] = True
@@ -104,7 +104,7 @@ while running:
                             pygame.quit()
                             sys.exit()
 
-            # 🖱️ CLICK DERECHO
+            #  CLICK DERECHO
             elif event.button == 3:
                 if not visible[fila][col]:
                     banderas[fila][col] = not banderas[fila][col]
