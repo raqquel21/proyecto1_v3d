@@ -3,32 +3,34 @@ import numpy as np
 import socket
 import os
 
-# --- CONFIGURACIÓN UDP ---
+# Configuración UDP:
+#   Para enviar la posición del objeto detectado (cintas)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_ip = "127.0.0.1"
 udp_port = 5005
 
-# --- CONFIGURACIÓN CÁMARA ---
+# Configuración para el móvil
 URL = "http://192.168.93.202:4747/video"
 H_FILE = "homografia_mesa.npz"  # Archivo generado por el otro código
 cap = cv2.VideoCapture(URL)
 cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
-# --- CARGAR HOMOGRAFÍA ---
+# Cargar homografía
 mask_mesa = None
 if os.path.exists(H_FILE):
     data = np.load(H_FILE)
     H_w2i = data['H_w2i']
 
-    # Creamos la máscara basada en los límites de tu mesa (0,0 a 30,20 cm)
+    # Creamos la máscara basada en los límites de la mesa (0,0 a 30,20 cm)
     mask_mesa = np.zeros((480, 640), dtype=np.uint8)
-    # Definimos las esquinas de la mesa en el mundo real (según tus WORLD_POINTS)
+    # Definimos las esquinas de la mesa en el mundo real (según los WORLD_POINTS)
     esquinas_mundo = np.array([[0, 0], [30, 0], [30, 20], [0, 20]], dtype=np.float32).reshape(-1, 1, 2)
     # Proyectamos a píxeles
     pts_pixel = cv2.perspectiveTransform(esquinas_mundo, H_w2i).astype(np.int32)
     cv2.fillPoly(mask_mesa, [pts_pixel], 255)
     print("Homografía cargada: Filtro de mesa activado.")
 else:
+    # Nos aseguramos que la cámara podrá funcionar igualmente
     print("ADVERTENCIA: No se encontró 'homografia_mesa.npz'. Se usará toda la imagen.")
 
 # --- RANGOS DE COLOR ---
@@ -44,10 +46,8 @@ while True:
     if not ret: break
 
     frame = cv2.resize(frame, (640, 480))
-    # Importante: No flipes el frame si el calibrador no lo hizo,
-    # o los puntos de la homografía no coincidirán.
 
-    # --- APLICAR MÁSCARA DE MESA ---
+    # Aplicar la máscara de la mesa
     if mask_mesa is not None:
         frame_mesa = cv2.bitwise_and(frame, frame, mask=mask_mesa)
     else:
@@ -84,11 +84,11 @@ while True:
         data = f"{cx},{cy},640,480,{id_estado}"
         sock.sendto(data.encode(), (udp_ip, udp_port))
 
-    # --- VISUALIZACIÓN ---
+    # Visualización
     mask_combinada = cv2.bitwise_or(mask_verde, mask_morado)
     mask_bgr = cv2.cvtColor(mask_combinada, cv2.COLOR_GRAY2BGR)
 
-    # Opcional: Dibujar el contorno de la mesa para saber dónde detecta
+    # Dibujamos el contorno de la mesa para saber dónde detecta (para que se vea más visual)
     if mask_mesa is not None:
         cv2.polylines(frame, [pts_pixel], True, (255, 255, 0), 2)
 
