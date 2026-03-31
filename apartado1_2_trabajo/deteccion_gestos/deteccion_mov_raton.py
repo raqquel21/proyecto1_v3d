@@ -1,11 +1,14 @@
+# Código que detecta los gestos con las funcionalidades de mediapipe
+# Se ha descartado este código debido a que esta librería tiene su tracking propio
+
 import cv2
 import mediapipe as mp
 import numpy as np
 import os
 
-# --- CONFIGURACIÓN ---
+# Configuración para el móvil
 URL = "http://192.168.93.211:4747/video"
-H_FILE = "homografia_mesa.npz"
+H_FILE = "homografia_mesa.npz" # Cargamos la homografía creada en la parte de calibración
 FRAME_SIZE = (640, 480)
 
 # Inicializar MediaPipe

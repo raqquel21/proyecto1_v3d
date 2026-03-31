@@ -1,7 +1,9 @@
+# Código del apartado 1_3 adaptado para la aplicación de móvil DroidCam
+
 import cv2
 import numpy as np
 
-# --- CONFIGURACIÓN PARA MÓVIL ---
+#  Configuración para el móvil
 IP_MOVIL = "192.168.93.209"
 PUERTO = "4747"
 # Usamos la URL de video de DroidCam

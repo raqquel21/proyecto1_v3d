@@ -1,3 +1,5 @@
+# Código básico para detectar la cámara
+# (lo usamos como referencia)
 import cv2
 
 def abrirCamara(url):

@@ -1,3 +1,6 @@
+# Código que trackea el movimiento de la mano con la selección del objeto de manera manual
+# (partimos de este código para la posterior implementación automática)
+
 import cv2
 import sys
 import numpy as np
